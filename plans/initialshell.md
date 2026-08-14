@@ -7,11 +7,14 @@ on top of it. This session builds no business features and no sample tool.
 
 - Next.js 16, App Router, TypeScript
 - Tailwind
-- Neon Postgres via the Vercel Marketplace (`DATABASE_URL` is injected)
+- Neon Postgres, connected via `DATABASE_URL` (already set in the environment)
 - Drizzle with the `neon-http` driver
 - Deployed to Vercel with deployment protection enabled
 
-Use a Neon branch for local development rather than a local Postgres.
+The project is already created and connected to Neon. Do not add a local
+Postgres, Docker, or a database provisioning step. Read the connection string
+from `DATABASE_URL` and never print it or commit it. Keep `.env.example`
+committed with an empty `DATABASE_URL=` and never create a `.env` file.
 
 ## Data model
 
@@ -20,7 +23,8 @@ Use a Neon branch for local development rather than a local Postgres.
 **`audit_events`** — id, occurredAt, actorEmail, action, resource, resourceId,
 details (JSON)
 
-Seed four users, one per role, using `@example.test` addresses.
+Manage the schema with Drizzle Kit, committing generated migrations. Seed four
+users, one per role, using `@example.test` addresses.
 
 ## 1. Identity
 
@@ -87,5 +91,7 @@ read-access logging, per-tool role scoping, and any business feature.
 
 ## Done when
 
-The app deploys to Vercel, the user switcher changes the active role, the
-audit page renders, and `CONVENTIONS.md` exists.
+The app builds and deploys to Vercel, the user switcher changes the active
+role, the audit page renders, and `CONVENTIONS.md` exists.
+
+Open a PR. Do not merge.
