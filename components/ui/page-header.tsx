@@ -1,22 +1,35 @@
 import type { ReactNode } from "react";
 
+import { cn } from "@/lib/utils";
+
+/**
+ * Project-specific composition (no shadcn equivalent): the title block every
+ * tool page starts with.
+ */
 export function PageHeader({
   title,
   description,
   actions,
+  className,
 }: {
   title: string;
   description?: string;
   actions?: ReactNode;
+  className?: string;
 }) {
   return (
-    <div className="mb-6 flex items-start justify-between gap-4 border-b border-zinc-200 pb-4">
+    <div
+      className={cn(
+        "mb-6 flex items-start justify-between gap-4 border-b pb-4",
+        className,
+      )}
+    >
       <div>
-        <h1 className="text-xl font-semibold tracking-tight text-zinc-900">
+        <h1 className="font-heading text-xl font-semibold tracking-tight">
           {title}
         </h1>
         {description ? (
-          <p className="mt-1 text-sm text-zinc-500">{description}</p>
+          <p className="mt-1 text-sm text-muted-foreground">{description}</p>
         ) : null}
       </div>
       {actions ? <div className="flex items-center gap-2">{actions}</div> : null}

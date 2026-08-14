@@ -1,5 +1,6 @@
 "use client";
 
+import { Button } from "@/components/ui/button";
 import type { CurrentUser } from "@/lib/identity";
 
 /**
@@ -15,7 +16,7 @@ export function UserSwitcher({
 }) {
   return (
     <form method="post" action="/api/identity/switch" className="flex items-center gap-2">
-      <label htmlFor="identity-email" className="text-xs text-zinc-500">
+      <label htmlFor="identity-email" className="text-xs text-muted-foreground">
         Acting as
       </label>
       <select
@@ -23,7 +24,7 @@ export function UserSwitcher({
         name="email"
         defaultValue={currentEmail}
         onChange={(event) => event.currentTarget.form?.requestSubmit()}
-        className="h-8 rounded-md border border-zinc-300 bg-white px-2 text-sm text-zinc-800"
+        className="h-8 rounded-lg border bg-background px-2 text-sm shadow-xs outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50"
       >
         {users.map((user) => (
           <option key={user.email} value={user.email}>
@@ -32,12 +33,7 @@ export function UserSwitcher({
         ))}
       </select>
       <noscript>
-        <button
-          type="submit"
-          className="h-8 rounded-md bg-zinc-900 px-3 text-sm font-medium text-white"
-        >
-          Switch
-        </button>
+        <Button type="submit">Switch</Button>
       </noscript>
     </form>
   );

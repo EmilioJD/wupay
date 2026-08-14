@@ -89,17 +89,41 @@ Conventions for actions:
 - Reads do not need the wrapper — read access is not audited.
 - No transactions and no idempotency (deliberately out of scope for now).
 
-## Shared components
+## Shared components (shadcn/ui)
 
-Use these instead of hand-rolling markup, so tools look the same:
+UI primitives are [shadcn/ui](https://ui.shadcn.com) components, generated into
+`components/ui/` and owned by this repo (`components.json` holds the config:
+radix base, `nova` preset, neutral base colour, lucide icons).
 
-- `PageHeader` — title, optional description and actions. One per page, at the top.
-- `Table`, `THead`, `TBody`, `TR`, `TH`, `TD`, `TableEmpty` — all tabular data.
-- `Badge` — statuses and roles (`tone`: `neutral`, `info`, `success`, `warning`, `danger`).
-- `Button` — buttons (`variant`: `primary`, `secondary`, `danger`).
+Available today:
 
-Plain Tailwind, light mode only. If a tool needs a new shared primitive, add it
-to `components/ui/` rather than duplicating classes.
+- `Button` — `variant`: `default`, `secondary`, `outline`, `ghost`,
+  `destructive`, `link`; `size`: `default`, `xs`, `sm`, `lg`, `icon*`.
+- `Badge` — statuses and roles, same `variant` names as `Button`.
+- `Table`, `TableHeader`, `TableBody`, `TableRow`, `TableHead`, `TableCell`,
+  `TableCaption`, `TableFooter` — all tabular data. See `app/(shell)/audit`.
+- `PageHeader` — the one non-shadcn component here (title, optional description
+  and actions). One per page, at the top.
+
+Need something else (dialog, input, dropdown-menu, …)? Generate it, don't
+hand-roll it:
+
+```bash
+pnpm dlx shadcn@4.17.0 add dialog input
+```
+
+Rules of thumb:
+
+- Style with the theme tokens (`bg-background`, `text-muted-foreground`,
+  `border`, `bg-muted`), not raw palette colours like `zinc-200`. Tokens live in
+  `app/globals.css`.
+- Merge classes with `cn()` from `lib/utils.ts` and accept a `className` prop on
+  components you write.
+- Prefer editing the generated component (that is the point of shadcn) or
+  composing on top of it over forking a second copy.
+- Tool-specific composed components live next to the tool; shared ones go in
+  `components/ui/`.
+- Light mode only for now; the dark tokens exist but nothing toggles `.dark`.
 
 ## Adding a navigation link
 
