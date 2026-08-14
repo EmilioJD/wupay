@@ -1,4 +1,5 @@
 import {
+  boolean,
   index,
   integer,
   jsonb,
@@ -86,7 +87,28 @@ export const refunds = pgTable(
   (table) => [index("refunds_created_at_idx").on(table.createdAt.desc())],
 );
 
+export const featureFlags = pgTable(
+  "feature_flags",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    /** Lowercase, words separated by dots or dashes, e.g. "payouts.instant". */
+    key: text("key").notNull().unique(),
+    description: text("description").notNull(),
+    enabled: boolean("enabled").notNull().default(false),
+    rolloutPercentage: integer("rollout_percentage").notNull().default(0),
+    updatedBy: text("updated_by").notNull(),
+    createdAt: timestamp("created_at", { withTimezone: true })
+      .notNull()
+      .defaultNow(),
+    updatedAt: timestamp("updated_at", { withTimezone: true })
+      .notNull()
+      .defaultNow(),
+  },
+  (table) => [index("feature_flags_key_idx").on(table.key)],
+);
+
 export type User = typeof users.$inferSelect;
 export type AuditEvent = typeof auditEvents.$inferSelect;
 export type Payment = typeof payments.$inferSelect;
 export type Refund = typeof refunds.$inferSelect;
+export type FeatureFlag = typeof featureFlags.$inferSelect;
