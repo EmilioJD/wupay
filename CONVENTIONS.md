@@ -139,6 +139,10 @@ Add one entry to `navLinks` in `lib/nav.ts`:
 2. `pnpm db:generate` and commit the generated file in `db/migrations/`.
 3. `pnpm db:migrate` to apply it.
 
+`pnpm build` runs `db/migrate.ts` first, so a deployment applies pending
+migrations before it serves traffic. Without `DATABASE_URL` the step is skipped
+and only `next build` runs.
+
 `DATABASE_URL` (Neon) comes from the environment. Do not create a `.env` file in
 the repo, do not print the connection string, and keep `.env.example` empty.
 
