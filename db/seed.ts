@@ -1,7 +1,7 @@
 import "dotenv/config";
 
 import { getDb } from "./index";
-import { payments, users } from "./schema";
+import { featureFlags, payments, users } from "./schema";
 
 const seededUsers = [
   { email: "viewer@example.test", name: "Vera Viewer", role: "viewer" },
@@ -62,6 +62,42 @@ const seededPayments = [
   },
 ] as const;
 
+/** Fixed ids keep the seed idempotent; a mix of on, off, and partial rollouts. */
+const seededFlags = [
+  {
+    id: "6b2d0a00-0000-4000-8000-000000000001",
+    key: "refunds.bulk-issue",
+    description: "Issue several approved refunds in one go.",
+    enabled: true,
+    rolloutPercentage: 100,
+    updatedBy: "admin@example.test",
+  },
+  {
+    id: "6b2d0a00-0000-4000-8000-000000000002",
+    key: "payouts.instant",
+    description: "Send payouts over the instant rail instead of nightly ACH.",
+    enabled: true,
+    rolloutPercentage: 25,
+    updatedBy: "admin@example.test",
+  },
+  {
+    id: "6b2d0a00-0000-4000-8000-000000000003",
+    key: "checkout.new-ui",
+    description: "Serve the redesigned hosted checkout page.",
+    enabled: false,
+    rolloutPercentage: 10,
+    updatedBy: "support@example.test",
+  },
+  {
+    id: "6b2d0a00-0000-4000-8000-000000000004",
+    key: "disputes.auto-evidence",
+    description: "Attach stored evidence to new disputes automatically.",
+    enabled: false,
+    rolloutPercentage: 0,
+    updatedBy: "admin@example.test",
+  },
+] as const;
+
 async function seed() {
   const db = getDb();
   for (const user of seededUsers) {
@@ -86,8 +122,23 @@ async function seed() {
         },
       });
   }
+  for (const flag of seededFlags) {
+    await db
+      .insert(featureFlags)
+      .values(flag)
+      .onConflictDoUpdate({
+        target: featureFlags.id,
+        set: {
+          key: flag.key,
+          description: flag.description,
+          enabled: flag.enabled,
+          rolloutPercentage: flag.rolloutPercentage,
+          updatedBy: flag.updatedBy,
+        },
+      });
+  }
   console.log(
-    `Seeded ${seededUsers.length} users and ${seededPayments.length} payments.`,
+    `Seeded ${seededUsers.length} users, ${seededPayments.length} payments, and ${seededFlags.length} feature flags.`,
   );
 }
 

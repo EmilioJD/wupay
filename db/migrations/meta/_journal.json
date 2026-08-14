@@ -15,6 +15,13 @@
       "when": 1786745560047,
       "tag": "0001_boring_enchantress",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1786748071948,
+      "tag": "0002_lowly_rawhide_kid",
+      "breakpoints": true
     }
   ]
 }
