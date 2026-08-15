@@ -146,6 +146,40 @@ and only `next build` runs.
 `DATABASE_URL` (Neon) comes from the environment. Do not create a `.env` file in
 the repo, do not print the connection string, and keep `.env.example` empty.
 
+## Tests
+
+Unit tests run on [Vitest](https://vitest.dev) (`pnpm test`, `pnpm test:watch`)
+and live next to the code they cover as `*.test.ts`.
+
+Nothing touches the database: `lib/test-support/fake-db.ts` is a `FakeDb` that
+records the queries an action runs and returns queued rows, and
+`lib/test-support/fixtures.ts` builds rows and users.
+
+```ts
+let db: FakeDb;
+let currentUser: CurrentUser;
+
+vi.mock("@/db", () => ({
+  getDb: () => db as unknown as ReturnType<typeof import("@/db").getDb>,
+}));
+vi.mock("@/lib/identity", () => ({ getCurrentUser: async () => currentUser }));
+
+beforeEach(() => {
+  db = new FakeDb();
+  currentUser = makeUser("admin");
+});
+
+it("creates the flag", async () => {
+  db.queue([] /* uniqueness check */, [makeFlag()] /* insert … returning */);
+  await createFlag({ key: "checkout.new-ui", description: "…", enabled: true });
+  expect(db.callsOfKind("insert")[0].values).toMatchObject({ enabled: true });
+});
+```
+
+Cover the rules (roles and validation), what the action writes, and the audit
+event it produces. Keep `vi.mock` factories free of imported values — the call
+is hoisted, so reference module-level `let` bindings instead.
+
 ## Audit log
 
 `app/(shell)/audit` reads `audit_events` generically. A new tool needs no changes
