@@ -16,13 +16,6 @@ export default async function OverviewPage() {
         {user.email}) with the role{" "}
         <span className="font-medium text-foreground">{user.role}</span>.
       </p>
-      <p className="mt-2 text-sm text-muted-foreground">
-        See{" "}
-        <code className="rounded bg-muted px-1 py-0.5 font-mono">
-          CONVENTIONS.md
-        </code>{" "}
-        to add a tool.
-      </p>
     </>
   );
 }
